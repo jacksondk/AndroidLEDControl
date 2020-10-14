@@ -11,7 +11,7 @@ class SendUpdatesWorker implements Runnable {
     boolean on;
     RGB first_color = new RGB();
     RGB second_color = new RGB();
-    Object monitor = new Object();
+    final Object monitor = new Object();
 
     public void setColor(byte red, byte green, byte blue) {
         first_color.red = red;
@@ -68,13 +68,11 @@ class SendUpdatesWorker implements Runnable {
                 bytes[5] = second_color.green;
                 bytes[6] = second_color.blue;
             } else {
-                // Java initializes arrays to zero - so no work
+                // Java initializes arrays to zero - so no work to initialize the 'colors'
             }
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, addr, 25000);
             clientSocket.send(packet);
             clientSocket.close();
-        } catch (SocketException | UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
