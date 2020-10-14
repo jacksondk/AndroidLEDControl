@@ -1,25 +1,25 @@
 package dk.scicomp.ledcontrol;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.arch.core.util.Function;
 
 import android.os.Bundle;
-import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.concurrent.CyclicBarrier;
+public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener {
 
-public class MainActivity extends AppCompatActivity {
+    // UI members
+    private SeekBar redBar, redBar2;
+    private SeekBar greenBar, greenBar2;
+    private SeekBar blueBar, blueBar2;
+    private Switch onOffSwitch;
+    private Button button;
 
-    private SeekBar redBar;
-    private SeekBar greenBar;
-    private SeekBar blueBar;
-    private SendUpdats updater = new SendUpdats();
+    // Non UI members
+    private SendUpdatesWorker updater = new SendUpdatesWorker();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,85 +29,74 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         redBar = findViewById(R.id.redBar);
-        SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new ColorSeekBarChange();
-        redBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        redBar.setOnSeekBarChangeListener(this);
 
         greenBar = findViewById(R.id.greenBar);
-        greenBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        greenBar.setOnSeekBarChangeListener(this);
 
         blueBar = findViewById(R.id.blueBar);
-        blueBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
-    }
+        blueBar.setOnSeekBarChangeListener(this);
 
-    class SendUpdats implements Runnable {
+        redBar2 = findViewById(R.id.redBar2);
+        redBar2.setOnSeekBarChangeListener(this);
 
-        byte red, green, blue;
-        Object monitor = new Object();
+        greenBar2 = findViewById(R.id.greenBar2);
+        greenBar2.setOnSeekBarChangeListener(this);
 
-        public void setColor(byte red, byte green, byte blue) {
-            this.red = red;
-            this.green = green;
-            this.blue = blue;
-            synchronized (monitor) {
-                monitor.notify();
-            }
-        }
+        blueBar2 = findViewById(R.id.blueBar2);
+        blueBar2.setOnSeekBarChangeListener(this);
 
-        void workerLoop() {
-            while (true) {
-                try {
-                    synchronized (monitor) {
-                        monitor.wait();
-                        sendColor(red, green, blue);
+        onOffSwitch = findViewById(R.id.switch1);
+        onOffSwitch.setOnCheckedChangeListener(this);
+
+        button = findViewById(R.id.button);
+        button.setOnClickListener(new SearchClickHandler(25000,
+                new Function<String, String>() {
+                    @Override
+                    public String apply(String input) {
+                        final String val = input;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                button.setText(val);
+                            }
+                        });
+                        return input;
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        @Override
-        public void run() {
-            workerLoop();
-        }
-
-        void sendColor(byte red, byte green, byte blue) {
-            try {
-                DatagramSocket clientSocket = new DatagramSocket();
-                InetAddress addr = InetAddress.getByName("192.168.1.236");
-                byte[] bytes = new byte[3];
-                bytes[0] = red;
-                bytes[1] = green;
-                bytes[2] = blue;
-                DatagramPacket packet = new DatagramPacket(bytes, 3, addr, 25000);
-                clientSocket.send(packet);
-                clientSocket.close();
-            } catch (SocketException | UnknownHostException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+                }));
     }
 
 
-    class ColorSeekBarChange implements SeekBar.OnSeekBarChangeListener {
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        byte red, green, blue;
+        red = (byte) Math.min(redBar.getProgress(), 255);
+        green = (byte) Math.min(greenBar.getProgress(), 255);
+        blue = (byte) Math.min(blueBar.getProgress(), 255);
+        updater.setColor(red, green, blue);
 
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            byte red = (byte) Math.min(redBar.getProgress(), 255);
-            byte green = (byte) Math.min(greenBar.getProgress(), 255);
-            byte blue = (byte) Math.min(blueBar.getProgress(), 255);
-            updater.setColor(red, green, blue);
-        }
+        red = (byte) Math.min(redBar2.getProgress(), 255);
+        green = (byte) Math.min(greenBar2.getProgress(), 255);
+        blue = (byte) Math.min(blueBar2.getProgress(), 255);
+        updater.setColor2(red, green, blue);
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
+        updater.update();
     }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
+
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        updater.setOn(isChecked);
+    }
+
 }

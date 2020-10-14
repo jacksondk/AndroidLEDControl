@@ -22,8 +22,8 @@
         android:id="@+id/redBar"
         android:layout_width="360dp"
         android:layout_height="50dp"
-        android:layout_marginTop="36dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="36dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,22 +33,68 @@
         android:id="@+id/greenBar"
         android:layout_width="360dp"
         android:layout_height="50dp"
-        android:layout_marginTop="36dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="36dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/redBar"/>
+        app:layout_constraintTop_toBottomOf="@+id/redBar" />
 
     <SeekBar
         android:id="@+id/blueBar"
         android:layout_width="360dp"
         android:layout_height="50dp"
-        android:layout_marginTop="36dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="36dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/greenBar" />
+
+    <SeekBar
+        android:id="@+id/redBar2"
+        android:layout_width="360dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/blueBar" />
+
+    <SeekBar
+        android:id="@+id/greenBar2"
+        android:layout_width="360dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/redBar2" />
+
+    <SeekBar
+        android:id="@+id/blueBar2"
+        android:layout_width="360dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/greenBar2" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="Button"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/blueBar2" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
